@@ -1,0 +1,6 @@
+# Synthesis script for yosys created by qflow
+read_liberty -lib -ignore_miss_dir -setattr blackbox /apps/vlsi/share/qflow/tech/gscl45nm/gscl45nm.lib
+read_verilog  /home/lab-user/OpenLaneUser/designs/picorv32a_29/source/top.v
+read_verilog  uart_axi.v
+# Hierarchy check
+hierarchy -check

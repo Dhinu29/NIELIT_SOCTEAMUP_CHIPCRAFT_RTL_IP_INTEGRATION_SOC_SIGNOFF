@@ -1,0 +1,25 @@
+#-----------------------------------------------------
+# .magicrc startup file for OSU035 project under qflow
+#-----------------------------------------------------
+
+path sys +/apps/vlsi/share/qflow/tech/osu035
+tech load SCN4M_SUBM.20 -noprompt
+scalegrid 1 4
+set GND gnd
+set VDD vdd
+
+drc euclidean on
+drc off
+
+addpath digital
+
+
+# Qflow: read layout for review
+openwrapper
+box 0 0 0 0
+drc off
+gds read /apps/vlsi/share/qflow/tech/gscl45nm/gscl45nm.gds
+load and_gate
+select top cell
+expand
+view

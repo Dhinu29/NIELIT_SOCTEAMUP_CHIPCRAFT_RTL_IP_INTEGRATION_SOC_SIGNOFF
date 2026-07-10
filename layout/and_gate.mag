@@ -1,0 +1,67 @@
+magic
+tech scmos
+magscale 1 4
+timestamp 1783580902
+<< metal1 >>
+rect 122 30 224 31
+<< m2contact >>
+rect -8 38 8 50
+rect -8 34 19 38
+rect 3 22 19 34
+rect 102 22 122 38
+rect 224 22 240 38
+rect 69 -8 113 8
+<< metal2 >>
+rect -1 50 0 91
+rect 113 38 114 140
+rect 231 38 232 167
+<< m3contact >>
+rect 224 167 240 183
+rect 106 140 122 156
+rect -8 91 8 107
+rect 3 22 19 38
+rect 102 22 118 38
+rect 69 -8 112 8
+<< metal3 >>
+rect 240 174 251 175
+rect 122 147 251 148
+rect -20 98 -8 99
+rect 19 30 102 31
+<< m4contact >>
+rect 69 -8 112 8
+use AND2X2  AND2X2_1
+timestamp 0
+transform -1 0 125 0 -1 49
+box 0 -1 19 51
+use BUFX2  BUFX2_1
+timestamp 0
+transform 1 0 0 0 -1 49
+box 0 -1 15 51
+use FILL  FILL_0_0_0
+timestamp 0
+transform -1 0 84 0 -1 49
+box 0 -1 8 51
+use FILL  FILL_0_0_1
+timestamp 0
+transform -1 0 92 0 -1 49
+box 0 -1 8 51
+use FILL  FILL_0_0_2
+timestamp 0
+transform -1 0 99 0 -1 49
+box 0 -1 8 51
+use FILL  FILL_0_0_3
+timestamp 0
+transform -1 0 107 0 -1 49
+box 0 -1 8 51
+<< labels >>
+flabel space 91 4 91 4 7 FreeSans 48 270 0 0 vdd
+port 0 nsew
+flabel metal3 s 251 175 251 175 3 FreeSans 48 90 0 0 a
+port 1 nsew
+flabel metal3 s 251 148 251 148 3 FreeSans 48 90 0 0 b
+port 2 nsew
+flabel metal3 s -19 99 -19 99 7 FreeSans 48 90 0 0 y
+port 3 nsew
+<< properties >>
+string FIXED_BBOX -23 -4 251 247
+<< end >>

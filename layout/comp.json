@@ -1,0 +1,160 @@
+[
+  {
+   "pins": [
+      [
+        "A",
+        "Y",
+        "gnd",
+        "vdd"
+      ], [
+        "A",
+        "Y",
+        "gnd",
+        "vdd"
+      ]
+   ]
+  },
+  {
+   "pins": [
+      [
+        "A",
+        "B",
+        "Y",
+        "gnd",
+        "vdd"
+      ], [
+        "A",
+        "B",
+        "Y",
+        "gnd",
+        "vdd"
+      ]
+   ]
+  },
+  {
+   "name": [
+      "and_gate",
+      "and_gate"
+   ],
+   "devices": [
+       [
+         ["BUFX2", 1],
+         ["AND2X2", 1 ]
+       ], [
+         ["BUFX2", 1 ],
+         ["AND2X2", 1 ]
+       ]
+   ],
+   "nets": [
+    1,
+    6
+   ],
+   "badnets": [
+      [
+        [
+          [
+            "y",
+            [
+              [ "BUFX2", "A", 1 ],
+              [ "BUFX2", "Y", 1 ],
+              [ "BUFX2", "gnd", 1 ],
+              [ "BUFX2", "vdd", 1 ],
+              [ "AND2X2", "A", 1 ],
+              [ "AND2X2", "B", 1 ],
+              [ "AND2X2", "Y", 1 ],
+              [ "AND2X2", "gnd", 1 ],
+              [ "AND2X2", "vdd", 1 ]
+            ]
+          ],
+          [
+            "(no matching net)",
+            [
+              [ "", "", 0 ]
+            ]
+          ],
+          [
+            "(no matching net)",
+            [
+              [ "", "", 0 ]
+            ]
+          ],
+          [
+            "(no matching net)",
+            [
+              [ "", "", 0 ]
+            ]
+          ],
+          [
+            "(no matching net)",
+            [
+              [ "", "", 0 ]
+            ]
+          ],
+          [
+            "(no matching net)",
+            [
+              [ "", "", 0 ]
+            ]
+          ]
+        ], [
+          [
+            "vdd",
+            [
+              [ "BUFX2", "vdd", 1 ],
+              [ "AND2X2", "vdd", 1 ]
+            ]
+          ],
+          [
+            "gnd",
+            [
+              [ "BUFX2", "gnd", 1 ],
+              [ "AND2X2", "gnd", 1 ]
+            ]
+          ],
+          [
+            "_0_",
+            [
+              [ "BUFX2", "A", 1 ],
+              [ "AND2X2", "Y", 1 ]
+            ]
+          ],
+          [
+            "y",
+            [
+              [ "BUFX2", "Y", 1 ]
+            ]
+          ],
+          [
+            "a",
+            [
+              [ "AND2X2", "A", 1 ]
+            ]
+          ],
+          [
+            "b",
+            [
+              [ "AND2X2", "B", 1 ]
+            ]
+          ]
+        ]
+      ]
+   ],
+   "badelements": [
+   ],
+   "pins": [
+      [
+        "y",
+        "(no matching pin)",
+        "(no matching pin)",
+        "(no matching pin)",
+        "(no matching pin)"
+      ], [
+        "(no matching pin)",
+        "gnd",
+        "a",
+        "b",
+        "y"
+      ]
+   ]
+  }
+]

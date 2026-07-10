@@ -1,0 +1,83 @@
+
+
+Subcircuit pins:
+Circuit 1: BUFX2                           |Circuit 2: BUFX2                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+Y                                          |Y                                          
+gnd                                        |gnd                                        
+vdd                                        |vdd                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes BUFX2 and BUFX2 are equivalent.
+
+
+Subcircuit pins:
+Circuit 1: AND2X2                          |Circuit 2: AND2X2                          
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+B                                          |B                                          
+Y                                          |Y                                          
+gnd                                        |gnd                                        
+vdd                                        |vdd                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes AND2X2 and AND2X2 are equivalent.
+
+Subcircuit summary:
+Circuit 1: and_gate                        |Circuit 2: and_gate                        
+-------------------------------------------|-------------------------------------------
+BUFX2 (1)                                  |BUFX2 (1)                                  
+AND2X2 (1)                                 |AND2X2 (1)                                 
+Number of devices: 2                       |Number of devices: 2                       
+Number of nets: 1 **Mismatch**             |Number of nets: 6 **Mismatch**             
+---------------------------------------------------------------------------------------
+NET mismatches: Class fragments follow (with fanout counts):
+Circuit 1: and_gate                        |Circuit 2: and_gate                        
+
+---------------------------------------------------------------------------------------
+Net: y                                     |Net: y                                     
+  BUFX2/Y = 1                              |  BUFX2/Y = 1                              
+  BUFX2/A = 1                              |                                           
+  BUFX2/gnd = 1                            |                                           
+  BUFX2/vdd = 1                            |                                           
+  AND2X2/A = 1                             |                                           
+  AND2X2/B = 1                             |                                           
+  AND2X2/Y = 1                             |                                           
+  AND2X2/gnd = 1                           |                                           
+  AND2X2/vdd = 1                           |                                           
+                                           |                                           
+(no matching net)                          |Net: gnd                                   
+                                           |  BUFX2/gnd = 1                            
+                                           |  AND2X2/gnd = 1                           
+                                           |                                           
+(no matching net)                          |Net: _0_                                   
+                                           |  BUFX2/A = 1                              
+                                           |  AND2X2/Y = 1                             
+                                           |                                           
+(no matching net)                          |Net: vdd                                   
+                                           |  BUFX2/vdd = 1                            
+                                           |  AND2X2/vdd = 1                           
+                                           |                                           
+(no matching net)                          |Net: a                                     
+                                           |  AND2X2/A = 1                             
+                                           |                                           
+(no matching net)                          |Net: b                                     
+                                           |  AND2X2/B = 1                             
+---------------------------------------------------------------------------------------
+Netlists do not match.
+Port matching may fail to disambiguate symmetries.
+
+Subcircuit pins:
+Circuit 1: and_gate                        |Circuit 2: and_gate                        
+-------------------------------------------|-------------------------------------------
+y                                          |vdd **Mismatch**                           
+(no pin, node is y)                        |gnd                                        
+(no pin, node is y)                        |a                                          
+(no pin, node is y)                        |b                                          
+(no pin, node is y)                        |y                                          
+---------------------------------------------------------------------------------------
+Cell pin lists for and_gate and and_gate altered to match.
+Device classes and_gate and and_gate are equivalent.
+
+Final result: Top level cell failed pin matching.

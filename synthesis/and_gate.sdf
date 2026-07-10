@@ -1,0 +1,22 @@
+(DELAYFILE
+   (SDFVERSION "3.0")
+   (DESIGN "and_gate")
+   (DATE "07:08:21 Thursday July 09, 2026")
+   (VENDOR "unknown")
+   (PROGRAM "qrouter")
+   (VERSION "unknown")
+   (DIVIDER /)
+   (TIMESCALE 1 ps)
+   (CELL
+      (CELLTYPE "and_gate")
+      (INSTANCE)
+      (DELAY
+         (ABSOLUTE
+            (INTERCONNECT AND2X2_1/Y BUFX2_1/A (0.0297349))
+            (INTERCONNECT BUFX2_1/Y y (0))
+            (INTERCONNECT a AND2X2_1/A (0.116606))
+            (INTERCONNECT b AND2X2_1/B (0.0893992))
+         )
+      )
+   )
+)

@@ -1,0 +1,29 @@
+* XSpice netlist created from SPICE and liberty sources by spi2xspice.py
+*SPICE netlist created from BLIF module and_gate by blif2BSpice
+.subckt and_gate a_vdd a_gnd a_a a_b a_y
+ABUFX2_1 [_0_] y d_lut_BUFX2
+AAND2X2_1 [a b] _0_ d_lut_AND2X2
+
+.model todig_1v1 adc_bridge(in_high=0.7333333333333334 in_low=0.3666666666666667 rise_delay=50p fall_delay=50p)
+.model toana_1v1 dac_bridge(out_high=1.1 out_low=0)
+
+.model ddflop d_dff(ic=0 rise_delay=10p fall_delay=10p)
+.model dzero d_pulldown(load=50f)
+.model done d_pullup(load=50f)
+
+AA2D1 [a_vdd] [vdd] todig_1v1
+AA2D2 [a_gnd] [gnd] todig_1v1
+AA2D3 [a_a] [a] todig_1v1
+AA2D4 [a_b] [b] todig_1v1
+AD2A1 [y] [a_y] toana_1v1
+
+.ends and_gate
+ 
+
+* BUFX2 A
+.model d_lut_BUFX2 d_lut (rise_delay=10p fall_delay=10p input_load=50f
++ table_values "01")
+* AND2X2 (A B)
+.model d_lut_AND2X2 d_lut (rise_delay=10p fall_delay=10p input_load=50f
++ table_values "0001")
+.end

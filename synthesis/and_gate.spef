@@ -1,0 +1,71 @@
+*SPEF "IEEE 1481.1999"
+*DESIGN "and_gate"
+*DATE "07:08:21 Thursday July 09, 2026"
+*VENDOR "unknown"
+*PROGRAM "qrouter"
+*VERSION "unknown"
+*DESIGN_FLOW "qflow"
+*DIVIDER /
+*DELIMITER :
+*BUS_DELIMITER <>
+*T_UNIT 1 PS
+*C_UNIT 1 FF
+*R_UNIT 1 OHM
+*L_UNIT 1 HENRY
+
+*NAME_MAP
+*1 _0_
+*2 AND2X2_1
+*3 BUFX2_1
+*4 y
+*5 BUFX2_1
+*6 a
+*7 AND2X2_1
+*8 b
+*9 AND2X2_1
+
+*PORTS
+*4 O
+*6 I
+*8 I
+
+*D_NET *1 0
+*CONN
+*I *2:Y O *D AND2X2
+*I *3:A I *L 0.00153896
+*CAP
+1 1_1 0
+*RES
+1 *2:Y 1_1 18.3214
+2 1_1 *3:A 0
+*END
+*D_NET *4 0
+*CONN
+*I *5:Y O *D BUFX2
+*P *4 I
+*CAP
+1 4_1 0
+*RES
+1 *5:Y 4_1 14.9286
+2 4_1 *4 0
+*END
+*D_NET *6 0
+*CONN
+*P *6 O
+*I *7:A I *L 0.00179784
+*CAP
+1 6_1 0
+*RES
+1 *6 6_1 63.8588
+2 6_1 *7:A 0
+*END
+*D_NET *8 0
+*CONN
+*P *8 O
+*I *9:B I *L 0.00186944
+*CAP
+1 8_1 0
+*RES
+1 *8 8_1 46.8214
+2 8_1 *9:B 0
+*END

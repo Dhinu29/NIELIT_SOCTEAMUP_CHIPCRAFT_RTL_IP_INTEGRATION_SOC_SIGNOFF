@@ -1,0 +1,24 @@
+# Synthesis script for yosys created by qflow
+read_liberty -lib -ignore_miss_dir -setattr blackbox /apps/vlsi/share/qflow/tech/gscl45nm/gscl45nm.lib
+read_verilog  /home/lab-user/OpenLaneUser/designs/picorv32a_29/source/and_gate.v
+
+# High-level synthesis
+synth -top and_gate
+# Map register flops
+dfflibmap -liberty /apps/vlsi/share/qflow/tech/gscl45nm/gscl45nm.lib
+opt
+
+# Map combinatorial cells, standard script
+abc -exe /apps/vlsi/share/qflow/bin/yosys-abc -liberty /apps/vlsi/share/qflow/tech/gscl45nm/gscl45nm.lib -script +strash;scorr;ifraig;retime,{D};strash;dch,-f;map,-M,1,{D}
+flatten
+setundef -zero
+
+clean -purge
+# Output buffering
+iopadmap -outpad BUFX2 A:Y -bits
+# Cleanup
+opt
+clean
+rename -enumerate
+write_blif  -buf BUFX2 A Y and_gate_mapped.blif
+stat

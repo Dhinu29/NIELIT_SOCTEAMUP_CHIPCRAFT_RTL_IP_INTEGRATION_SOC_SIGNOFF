@@ -1,0 +1,23 @@
+* NGSPICE file created from and_gate.ext - technology: scmos
+
+* Black-box entry subcircuit for FILL abstract view
+.subckt FILL gnd vdd
+.ends
+
+* Black-box entry subcircuit for BUFX2 abstract view
+.subckt BUFX2 A Y gnd vdd
+.ends
+
+* Black-box entry subcircuit for AND2X2 abstract view
+.subckt AND2X2 A B Y gnd vdd
+.ends
+
+.subckt and_gate y
+XFILL_0_0_0 y y FILL
+XFILL_0_0_1 y y FILL
+XFILL_0_0_2 y y FILL
+XFILL_0_0_3 y y FILL
+XBUFX2_1 y y y y BUFX2
+XAND2X2_1 y y y y y AND2X2
+.ends
+

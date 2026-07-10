@@ -1,0 +1,153 @@
+VERSION 5.6 ;
+NAMESCASESENSITIVE ON ;
+DIVIDERCHAR "/" ;
+BUSBITCHARS "<>" ;
+DESIGN and_gate ;
+UNITS DISTANCE MICRONS 2000 ;
+
+DIEAREA ( -2280 -380 ) ( 25080 24700 ) ;
+
+TRACKS Y -380.0 DO 67 STEP 380 LAYER metal1 ;
+TRACKS X -2280.0 DO 73 STEP 380 LAYER metal2 ;
+TRACKS Y -380.0 DO 67 STEP 380 LAYER metal3 ;
+TRACKS X -2280.0 DO 37 STEP 760 LAYER metal4 ;
+TRACKS Y -304.0 DO 34 STEP 760 LAYER metal5 ;
+TRACKS X -2280.0 DO 37 STEP 760 LAYER metal6 ;
+TRACKS Y -304.0 DO 17 STEP 1520 LAYER metal7 ;
+TRACKS X -2128.0 DO 19 STEP 1520 LAYER metal8 ;
+TRACKS Y -380.0 DO 14 STEP 1900 LAYER metal9 ;
+TRACKS X -2280.0 DO 15 STEP 1900 LAYER metal10 ;
+
+VIAS 10 ;
+- M2_M1_post
++ RECT metal1 ( -1520 -135 ) ( 1520 135 )
++ RECT metal2 ( -1520 -135 ) ( 1520 135 )
++ RECT via1 ( -1500 -65 ) ( -1370 65 )
++ RECT via1 ( -1090 -65 ) ( -960 65 )
++ RECT via1 ( -680 -65 ) ( -550 65 )
++ RECT via1 ( -270 -65 ) ( -140 65 )
++ RECT via1 ( 140 -65 ) ( 270 65 )
++ RECT via1 ( 550 -65 ) ( 680 65 )
++ RECT via1 ( 960 -65 ) ( 1090 65 )
++ RECT via1 ( 1370 -65 ) ( 1500 65 ) ;
+- M3_M2_post
++ RECT metal2 ( -1520 -140 ) ( 1520 140 )
++ RECT metal3 ( -1520 -140 ) ( 1520 140 )
++ RECT via2 ( -1420 -70 ) ( -1280 70 )
++ RECT via2 ( -970 -70 ) ( -830 70 )
++ RECT via2 ( -520 -70 ) ( -380 70 )
++ RECT via2 ( -70 -70 ) ( 70 70 )
++ RECT via2 ( 380 -70 ) ( 520 70 )
++ RECT via2 ( 830 -70 ) ( 970 70 )
++ RECT via2 ( 1280 -70 ) ( 1420 70 ) ;
+- M4_M3_post
++ RECT metal3 ( -1520 -140 ) ( 1520 140 )
++ RECT metal4 ( -1520 -140 ) ( 1520 140 )
++ RECT via3 ( -1420 -70 ) ( -1280 70 )
++ RECT via3 ( -970 -70 ) ( -830 70 )
++ RECT via3 ( -520 -70 ) ( -380 70 )
++ RECT via3 ( -70 -70 ) ( 70 70 )
++ RECT via3 ( 380 -70 ) ( 520 70 )
++ RECT via3 ( 830 -70 ) ( 970 70 )
++ RECT via3 ( 1280 -70 ) ( 1420 70 ) ;
+- M5_M4_post
++ RECT metal4 ( -1520 -140 ) ( 1520 140 )
++ RECT metal5 ( -1520 -140 ) ( 1520 140 )
++ RECT via4 ( -1460 -140 ) ( -1180 140 )
++ RECT via4 ( -580 -140 ) ( -300 140 )
++ RECT via4 ( 300 -140 ) ( 580 140 )
++ RECT via4 ( 1180 -140 ) ( 1460 140 ) ;
+- M6_M5_post
++ RECT metal5 ( -1520 -140 ) ( 1520 140 )
++ RECT metal6 ( -1520 -140 ) ( 1520 140 )
++ RECT via5 ( -1460 -140 ) ( -1180 140 )
++ RECT via5 ( -580 -140 ) ( -300 140 )
++ RECT via5 ( 300 -140 ) ( 580 140 )
++ RECT via5 ( 1180 -140 ) ( 1460 140 ) ;
+- M7_M6_post
++ RECT metal6 ( -1520 -400 ) ( 1520 400 )
++ RECT metal7 ( -1520 -400 ) ( 1520 400 )
++ RECT via6 ( -1020 -140 ) ( -740 140 )
++ RECT via6 ( -140 -140 ) ( 140 140 )
++ RECT via6 ( 740 -140 ) ( 1020 140 ) ;
+- M8_M7_post
++ RECT metal7 ( -1520 -400 ) ( 1520 400 )
++ RECT metal8 ( -1520 -400 ) ( 1520 400 )
++ RECT via7 ( -400 -400 ) ( 400 400 ) ;
+- M9_M8_post
++ RECT metal8 ( -1520 -800 ) ( 1520 800 )
++ RECT metal9 ( -1520 -800 ) ( 1520 800 )
++ RECT via8 ( -400 -400 ) ( 400 400 ) ;
+- M10_M9_post
++ RECT metal9 ( -1520 -800 ) ( 1520 800 )
++ RECT metal10 ( -1520 -800 ) ( 1520 800 )
++ RECT via9 ( -800 -800 ) ( 800 800 ) ;
+- M1_POLY_post
++ RECT poly ( -1520 -135 ) ( 1520 135 )
++ RECT metal1 ( -1520 -135 ) ( 1520 135 )
++ RECT contact ( -1500 -65 ) ( -1370 65 )
++ RECT contact ( -1090 -65 ) ( -960 65 )
++ RECT contact ( -680 -65 ) ( -550 65 )
++ RECT contact ( -270 -65 ) ( -140 65 )
++ RECT contact ( 140 -65 ) ( 270 65 )
++ RECT contact ( 550 -65 ) ( 680 65 )
++ RECT contact ( 960 -65 ) ( 1090 65 )
++ RECT contact ( 1370 -65 ) ( 1500 65 ) ;
+END VIAS
+
+COMPONENTS 10 ;
+- BUFX2_1 BUFX2 + PLACED ( 0 0 ) FS ;
+- FILL_0_0_0 FILL + PLACED ( 7600 0 ) S ;
+- FILL_0_0_1 FILL + PLACED ( 8360 0 ) S ;
+- FILL_0_0_2 FILL + PLACED ( 9120 0 ) S ;
+- FILL_0_0_3 FILL + PLACED ( 9880 0 ) S ;
+- AND2X2_1 AND2X2 + PLACED ( 10640 0 ) S ;
+END COMPONENTS
+
+PINS 5 ;
+- vdd + NET vdd
+  + LAYER metal10 ( -1520 -760 ) ( 1520 760 )
+  + PLACED ( 9120 380 ) N ;
+- a + NET a
+  + LAYER metal3 ( 0 0 ) ( 1 1 )
+  + PLACED ( 25080 17480 ) N ;
+- b + NET b
+  + LAYER metal3 ( 0 0 ) ( 1 1 )
+  + PLACED ( 25080 14820 ) N ;
+- y + NET y
+  + LAYER metal3 ( 0 0 ) ( 1 1 )
+  + PLACED ( -1900 9880 ) N ;
+END PINS
+
+NETS 4 ;
+- _0_
+  ( AND2X2_1 Y ) 
+  ( BUFX2_1 A ) ;
+- y
+  ( PIN y ) 
+  ( BUFX2_1 Y ) ;
+- a
+  ( PIN a ) 
+  ( AND2X2_1 A ) ;
+- b
+  ( PIN b ) 
+  ( AND2X2_1 B ) ;
+END NETS
+
+SPECIALNETS 2 ;
+- vdd
++ FIXED metal1 270 ( 9120 0 ) ( * * ) M2_M1_post
+  NEW metal2 280 ( 9120 0 ) ( * * ) M3_M2_post
+  NEW metal3 280 ( 9120 0 ) ( * * ) M4_M3_post
+  NEW metal4 280 ( 9120 0 ) ( * * ) M5_M4_post
+  NEW metal5 280 ( 9120 0 ) ( * * ) M6_M5_post
+  NEW metal6 800 ( 9120 0 ) ( * * ) M7_M6_post
+  NEW metal7 800 ( 9120 0 ) ( * * ) M8_M7_post
+  NEW metal8 1600 ( 9120 0 ) ( * * ) M9_M8_post
+  NEW metal9 1600 ( 9120 0 ) ( * * ) M10_M9_post
+  NEW metal10 3040 ( 9120 -380 ) ( * 24700 )
+ ;
+- gnd
+ ;
+END SPECIALNETS
+END DESIGN
