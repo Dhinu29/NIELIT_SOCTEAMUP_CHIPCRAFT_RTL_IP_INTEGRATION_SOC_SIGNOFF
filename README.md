@@ -1272,7 +1272,7 @@ openlane/
 
 ---
 
-# 1️⃣ Logic Synthesis
+#  Logic Synthesis
 
 Logic synthesis converts the Verilog RTL into a gate-level netlist using the SKY130 standard cell library. During this stage, OpenLane optimizes the logic for area and timing before physical implementation begins.
 
@@ -1292,7 +1292,7 @@ Logic synthesis converts the Verilog RTL into a gate-level netlist using the SKY
 
 ---
 
-# 2️⃣ Floorplanning
+#  Floorplanning
 
 Floorplanning determines the physical dimensions of the chip, defines the core area, places IO pins, and creates the power distribution network. A good floorplan significantly impacts routing quality and timing performance.
 
@@ -1313,7 +1313,7 @@ Floorplanning determines the physical dimensions of the chip, defines the core a
 
 ---
 
-# 3️⃣ Standard Cell Placement
+#  Standard Cell Placement
 
 During placement, every synthesized standard cell is assigned an optimized physical location within the core area while minimizing wire length and congestion.
 
@@ -1325,15 +1325,14 @@ During placement, every synthesized standard cell is assigned an optimized physi
 
 ### Screenshot
 
-```markdown
-<p align="center">
-<img src="images/openlane/placement.png" width="900">
-</p>
-```
+<img width="1917" height="912" alt="image" src="https://github.com/user-attachments/assets/98051a49-7a50-48fa-9468-ad401fc9f616" />
+<img width="1917" height="908" alt="image" src="https://github.com/user-attachments/assets/a102b07a-0820-487b-a9aa-6467e2354846" />
+
+
 
 ---
 
-# 4️⃣ Clock Tree Synthesis (CTS)
+#  Clock Tree Synthesis (CTS)
 
 Clock Tree Synthesis distributes the clock signal to every sequential element while minimizing clock skew and insertion delay. Additional clock buffers are inserted where necessary.
 
@@ -1344,55 +1343,14 @@ Clock Tree Synthesis distributes the clock signal to every sequential element wh
 * Clock skew report
 
 ### Screenshot
-
-```markdown
-<p align="center">
-<img src="images/openlane/cts.png" width="900">
-</p>
-```
+<img width="1917" height="918" alt="image" src="https://github.com/user-attachments/assets/d0171307-689d-448b-9744-0b3562871e59" />
+<img width="1903" height="877" alt="image" src="https://github.com/user-attachments/assets/47ea7599-a9a3-41e1-b615-e31d67ecbf1c" />
 
 ---
 
-# 5️⃣ Global Routing
 
-Global routing determines the approximate routing paths for every net and estimates routing resources before detailed routing begins.
 
-### Output
-
-* Global routing database
-* Congestion information
-
-### Screenshot
-
-```markdown
-<p align="center">
-<img src="images/openlane/global_routing.png" width="900">
-</p>
-```
-
----
-
-# 6️⃣ Detailed Routing
-
-Detailed routing generates the final metal connections between all cells while ensuring compliance with the SKY130 manufacturing design rules.
-
-### Output
-
-* Routed layout
-* Metal layers
-* Final routed DEF
-
-### Screenshot
-
-```markdown
-<p align="center">
-<img src="images/openlane/routing.png" width="900">
-</p>
-```
-
----
-
-# 7️⃣ Physical Verification
+#  Physical Verification
 
 After routing, the design undergoes physical verification to ensure it is ready for fabrication.
 
@@ -1402,20 +1360,14 @@ After routing, the design undergoes physical verification to ensure it is ready 
 | **LVS**      | Verifies that the physical layout matches the synthesized gate-level netlist. |
 
 ### DRC Screenshot
+<img width="1918" height="911" alt="image" src="https://github.com/user-attachments/assets/de51174f-0ff8-457f-b854-cafed495d9fb" />
 
-```markdown
-<p align="center">
-<img src="images/openlane/drc.png" width="900">
-</p>
-```
+
 
 ### LVS Screenshot
 
-```markdown
-<p align="center">
-<img src="images/openlane/lvs.png" width="900">
-</p>
-```
+<img width="1918" height="566" alt="image" src="https://github.com/user-attachments/assets/022ccdd3-2584-4db9-9a64-a2a4f593868c" />
+
 
 ---
 
@@ -1432,14 +1384,8 @@ The final stage generates the **GDSII layout**, which is the industry-standard f
 * Liberty files
 
 ### Screenshot
+<img width="1918" height="916" alt="image" src="https://github.com/user-attachments/assets/cd3764e5-98ac-486e-a458-7a9ca9456164" />
 
-```markdown
-<p align="center">
-<img src="images/openlane/final_gds.png" width="900">
-</p>
-```
-
----
 
 # Final Implementation Summary
 
