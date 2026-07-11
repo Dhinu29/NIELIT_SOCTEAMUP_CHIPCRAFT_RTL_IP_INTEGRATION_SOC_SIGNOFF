@@ -1120,112 +1120,341 @@ The SoC integrates the **PicoRV32 processor** with an **AXI4-Lite interconnect**
 | **UART STATUS** | `0x10000008` |
 
 
+## 🚀 End-to-End Signal Flow: `uart_putc('H')`
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 8. Complete SoC Integration
-
-After validating individual modules, the complete subsystem was integrated.
-
-### Final SoC Includes
-
-* RISC-V Processor
-* AXI4-Lite Interconnect
-* UART Peripheral
-* Memory Interface
-* Clock Logic
-* Reset Controller
-
-The integrated design was verified through functional simulation.
-
----
-
-# 9. Functional Verification
-
-Verification was performed using Verilog/SystemVerilog testbenches.
-
-### Verification Activities
-
-* RTL Simulation
-* Functional Verification
-* Waveform Analysis
-* Signal Debugging
-* Bus Transaction Verification
-* UART Timing Verification
-
-### Tools
-
-* Verilator
-* GTKWave
-
----
-
-# 10. RTL-to-GDSII ASIC Implementation
-
-The verified RTL design was synthesized and implemented using OpenLane.
-
-## Design Flow
+**Example:** Firmware transmits the character **'H' (0x48)** through the UART peripheral.
 
 ```text
-RTL Design
-      │
-      ▼
-Logic Synthesis
-      │
-      ▼
-Floorplanning
-      │
-      ▼
-Placement
-      │
-      ▼
-Clock Tree Synthesis
-      │
-      ▼
-Routing
-      │
-      ▼
-DRC & LVS
-      │
-      ▼
-GDSII Generation
+┌──────────────────────────────────────┐
+│ ① Firmware                           │
+├──────────────────────────────────────┤
+│ uart_putc('H')                       │
+│ UART_TX = 'H'                        │
+│                                      │
+│ SB x5, 0(x10)                        │
+│ Address = 0x10000000                 │
+│ Data    = 0x48                       │
+│ WSTRB   = 4'h1                       │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│ ② PicoRV32 Native Memory Bus         │
+├──────────────────────────────────────┤
+│ mem_valid = 1                        │
+│ mem_wstrb = 4'h1                     │
+│ mem_addr  = 0x10000000               │
+│ mem_wdata = 0x48                     │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│ ③ CPU-to-AXI Bridge FSM              │
+├──────────────────────────────────────┤
+│ ST_IDLE → ST_WR_AW                   │
+│ awaddr  = 0x10000000                 │
+│ awvalid = 1                          │
+│ wdata   = 0x48                       │
+│ wstrb   = 4'h1                       │
+│ wvalid  = 1                          │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│ ④ AXI-Lite Interconnect              │
+├──────────────────────────────────────┤
+│ wr_sel = 3'b100                      │
+│ UART Slave Selected                  │
+│ s_axi_awvalid = 1                    │
+│ Other Slaves = 0                     │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│ ⑤ UART AXI Peripheral (uart_axi.v)   │
+├──────────────────────────────────────┤
+│ AW Handshake Complete                │
+│ W Handshake Complete                 │
+│ w_byte   = 0x48                      │
+│ buf_valid = 1                        │
+│ BVALID = 1                           │
+│ BRESP  = 2'b00 (OKAY)                │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│ ⑥ UART Transmitter (uart_tx.v)       │
+├──────────────────────────────────────┤
+│ Data = 0x48 ('H')                    │
+│ FSM:                                 │
+│ START → DATA (8 bits) → STOP         │
+│                                      │
+│ TX Output: 8N1 @ 115200 Baud         │
+└──────────────────────────────────────┘
 ```
 
-### Tools Used
+### ⏱️ End-to-End Latency
 
-* Yosys
-* OpenSTA
-* OpenLane
-* Magic
-* Netgen
+| Stage                 | Description                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **CPU → Bridge**      | ~3 clock cycles for the AXI bridge state transitions.                                                           |
+| **UART Transmission** | Start bit begins after **434 clock cycles** (`CLKS_PER_BIT`) at **115200 baud** with a **50 MHz** system clock. |
+| **Data Format**       | Standard **8N1** UART frame (1 Start, 8 Data, No Parity, 1 Stop).                                               |
+
+
+
+
+
+# 🏭 RTL-to-GDSII ASIC Physical Design Flow
+
+## Introduction
+
+After completing the functional verification of the **RISC-V SoC subsystem**, the design was implemented using the **OpenLane ASIC flow**. OpenLane is an open-source digital ASIC implementation framework built on top of the SkyWater SKY130 Process Design Kit (PDK).
+
+The RTL-to-GDSII flow converts the synthesizable Verilog RTL into a fabrication-ready integrated circuit layout (**GDSII**) through a sequence of automated physical design stages. Each stage progressively transforms the logical design into its final physical representation while ensuring timing, area, power, and manufacturability constraints are satisfied.
+
+---
+
+# RTL-to-GDSII Flow
+
+```text
+             Verilog RTL
+                  │
+                  ▼
+        1. Logic Synthesis
+                  │
+                  ▼
+          2. Floorplanning
+                  │
+                  ▼
+        3. Cell Placement
+                  │
+                  ▼
+    4. Clock Tree Synthesis
+                  │
+                  ▼
+      5. Global Routing
+                  │
+                  ▼
+     6. Detailed Routing
+                  │
+                  ▼
+   7. DRC / LVS Verification
+                  │
+                  ▼
+          8. Final GDSII
+```
+
+---
+
+# Project Directory
+
+The OpenLane execution generates multiple directories containing reports, logs, intermediate databases, and final layout files.
+
+```text
+openlane/
+│
+├── config.json
+├── runs/
+│   └── RUN_YYYY_MM_DD_HH_MM_SS/
+│       ├── logs/
+│       ├── reports/
+│       ├── results/
+│       │   ├── synthesis/
+│       │   ├── floorplan/
+│       │   ├── placement/
+│       │   ├── cts/
+│       │   ├── routing/
+│       │   ├── signoff/
+│       │   └── final/
+│       └── tmp/
+```
+
+---
+
+# 1️⃣ Logic Synthesis
+
+Logic synthesis converts the Verilog RTL into a gate-level netlist using the SKY130 standard cell library. During this stage, OpenLane optimizes the logic for area and timing before physical implementation begins.
+
+### Output
+
+* Gate-level netlist
+* Cell utilization
+* Area report
+* Timing report
+
+### Screenshot
+
+<img width="4880" height="4230" alt="hierarchy" src="https://github.com/user-attachments/assets/dd104dee-6258-48c5-8806-249667aa883a" />
+<img width="1918" height="908" alt="image" src="https://github.com/user-attachments/assets/f0c19176-251e-45fe-b285-4e1516705b1b" />
+
+
+
+---
+
+# 2️⃣ Floorplanning
+
+Floorplanning determines the physical dimensions of the chip, defines the core area, places IO pins, and creates the power distribution network. A good floorplan significantly impacts routing quality and timing performance.
+
+### Output
+
+* Die size
+* Core utilization
+* Power grid
+* IO placement
+
+### Screenshot
+<img width="1917" height="612" alt="image" src="https://github.com/user-attachments/assets/e38ef474-9833-44a1-95bf-aa7c4e841e48" />
+<img width="1918" height="620" alt="image" src="https://github.com/user-attachments/assets/780d30bc-476c-4d9a-b5b9-e4330fe32779" />
+<img width="1917" height="911" alt="image" src="https://github.com/user-attachments/assets/0e264657-354c-4634-9a02-afe5e514b3d7" />
+
+
+
+
+---
+
+# 3️⃣ Standard Cell Placement
+
+During placement, every synthesized standard cell is assigned an optimized physical location within the core area while minimizing wire length and congestion.
+
+### Output
+
+* Placed standard cells
+* Congestion analysis
+* Placement report
+
+### Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/placement.png" width="900">
+</p>
+```
+
+---
+
+# 4️⃣ Clock Tree Synthesis (CTS)
+
+Clock Tree Synthesis distributes the clock signal to every sequential element while minimizing clock skew and insertion delay. Additional clock buffers are inserted where necessary.
+
+### Output
+
+* Clock tree
+* Clock buffers
+* Clock skew report
+
+### Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/cts.png" width="900">
+</p>
+```
+
+---
+
+# 5️⃣ Global Routing
+
+Global routing determines the approximate routing paths for every net and estimates routing resources before detailed routing begins.
+
+### Output
+
+* Global routing database
+* Congestion information
+
+### Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/global_routing.png" width="900">
+</p>
+```
+
+---
+
+# 6️⃣ Detailed Routing
+
+Detailed routing generates the final metal connections between all cells while ensuring compliance with the SKY130 manufacturing design rules.
+
+### Output
+
+* Routed layout
+* Metal layers
+* Final routed DEF
+
+### Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/routing.png" width="900">
+</p>
+```
+
+---
+
+# 7️⃣ Physical Verification
+
+After routing, the design undergoes physical verification to ensure it is ready for fabrication.
+
+| Verification | Purpose                                                                       |
+| ------------ | ----------------------------------------------------------------------------- |
+| **DRC**      | Confirms that the layout satisfies all manufacturing design rules.            |
+| **LVS**      | Verifies that the physical layout matches the synthesized gate-level netlist. |
+
+### DRC Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/drc.png" width="900">
+</p>
+```
+
+### LVS Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/lvs.png" width="900">
+</p>
+```
+
+---
+
+# 8️⃣ Final GDSII Layout
+
+The final stage generates the **GDSII layout**, which is the industry-standard file format used for semiconductor fabrication. This file contains the complete physical geometry of the integrated circuit.
+
+### Output
+
+* Final GDSII (`.gds`)
+* LEF
+* DEF
+* SPEF
+* Liberty files
+
+### Screenshot
+
+```markdown
+<p align="center">
+<img src="images/openlane/final_gds.png" width="900">
+</p>
+```
+
+---
+
+# Final Implementation Summary
+
+| Stage                   | Status |
+| ----------------------- | :----: |
+| RTL Design              |    ✅   |
+| Logic Synthesis         |    ✅   |
+| Floorplanning           |    ✅   |
+| Standard Cell Placement |    ✅   |
+| Clock Tree Synthesis    |    ✅   |
+| Global Routing          |    ✅   |
+| Detailed Routing        |    ✅   |
+| DRC Verification        |    ✅   |
+| LVS Verification        |    ✅   |
+| Final GDSII Generation  |    ✅   |
 
 ---
 
