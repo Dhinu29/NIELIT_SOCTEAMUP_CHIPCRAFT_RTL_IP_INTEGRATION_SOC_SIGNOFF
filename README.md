@@ -1418,34 +1418,7 @@ The final stage generates the **GDSII layout**, which is the industry-standard f
 | GitHub      | Project Management      |
 | Linux       | Development Environment |
 
----
 
-# 📂 Repository Structure
-
-```text
-RISCV-AXI-SoC/
-│
-├── docs/
-│   ├── MODULES.md
-│   ├── Project_Report.md
-│   └── Images/
-│
-├── rtl/
-│
-├── testbench/
-│
-├── firmware/
-│
-├── synthesis/
-│
-├── openlane/
-│
-├── waveforms/
-│
-├── images/
-│
-└── README.md
-```
 
 ---
 
