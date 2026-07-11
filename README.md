@@ -355,6 +355,8 @@ A transfer occurs **only** when both signals are HIGH during the rising edge of 
 | `WSTRB` selects which bytes are written during a write operation.                 |             
 
 ---
+#Advanced — Signal/Architecture Level
+<img width="995" height="613" alt="image" src="https://github.com/user-attachments/assets/b6738578-f5a2-4543-bbca-511b7e5f406a" />
 
 # 📝 WSTRB (Write Strobe) Encoding
 
@@ -368,6 +370,8 @@ A transfer occurs **only** when both signals are HIGH during the rising edge of 
 ---
 
 # 🏗️ AXI4-Lite Architecture
+
+<img width="1046" height="622" alt="image" src="https://github.com/user-attachments/assets/93d7a484-7e79-402f-bd72-a463b3844319" />
 
 ```text
                   +----------------+
@@ -459,11 +463,6 @@ index = (address >> 2) % NUM_REGS
 
 This converts a byte address into the corresponding register index inside the AXI-Lite slave.
 
-
-### Practical Outcome
-
-Implemented and verified AXI4-Lite communication between processor and peripherals.
-
 ---
 
 # 3. UART Peripheral Design
@@ -472,19 +471,169 @@ Implemented and verified AXI4-Lite communication between processor and periphera
 
 Design a UART peripheral for serial communication with external devices.
 
-### Features
+# 📡 Universal Asynchronous Receiver-Transmitter (UART)
 
-* UART Transmitter
-* UART Receiver
-* Configurable Baud Rate
-* Serial Data Transfer
-* Register Interface
+## What is UART?
 
-### Verification
+**UART (Universal Asynchronous Receiver-Transmitter)** is one of the oldest and most widely used **serial communication protocols**. It enables data transmission between two devices by sending **one bit at a time** over dedicated **Transmit (TX)** and **Receive (RX)** lines.
 
-UART functionality was verified using Verilog simulations and waveform analysis.
+Unlike synchronous communication protocols, **UART does not require a shared clock signal**. Instead, both communicating devices must be configured with the same communication parameters (such as baud rate, data bits, parity, and stop bits).
+
+Because of its simplicity, low hardware cost, and broad compatibility, UART is commonly used for embedded systems, debugging, and peripheral communication.
 
 ---
+
+## 📌 UART Overview
+
+| Feature                 | Description                                     |
+| ----------------------- | ----------------------------------------------- |
+| **Full Form**           | Universal Asynchronous Receiver-Transmitter     |
+| **Communication Type**  | Asynchronous Serial Communication               |
+| **Transmission**        | Bit-by-bit serial communication                 |
+| **Clock Signal**        | Not required (asynchronous)                     |
+| **Communication Lines** | TX (Transmit), RX (Receive), and GND            |
+| **Communication Mode**  | Full-Duplex (simultaneous transmit and receive) |
+| **Cost**                | Low hardware complexity                         |
+| **Typical Speed**       | 9.6 kbps to several Mbps (device dependent)     |
+
+---
+
+## 🏗️ UART Frame Format
+
+A UART frame consists of several fields transmitted sequentially.
+
+| Field           | Size                   | Purpose                                    |
+| --------------- | ---------------------- | ------------------------------------------ |
+| **Start Bit**   | 1 bit                  | Indicates the beginning of a transmission. |
+| **Data Bits**   | 5–9 bits (typically 8) | Actual payload data.                       |
+| **Parity Bit**  | Optional               | Used for simple error detection.           |
+| **Stop Bit(s)** | 1 or 2 bits            | Marks the end of the transmission.         |
+
+### Example (8N1 Configuration)
+
+```text
+Start | D0 D1 D2 D3 D4 D5 D6 D7 | Stop
+  0   |       8 Data Bits       |   1
+```
+
+> **8N1** means **8 data bits**, **No parity**, and **1 stop bit**, which is the most commonly used UART configuration.
+
+---
+
+## 🔄 UART Communication
+
+```text
+          TX -----------------------> RX
+      +---------+                 +---------+
+      | Device A|                 | Device B|
+      |  UART   |                 |  UART   |
+      +---------+                 +---------+
+          RX <----------------------- TX
+```
+
+Communication is **full-duplex**, allowing both devices to transmit and receive data simultaneously.
+
+---
+
+## ⚙️ UART Communication Parameters
+
+| Parameter     | Description                                                 |
+| ------------- | ----------------------------------------------------------- |
+| **Baud Rate** | Number of bits transmitted per second (e.g., 9600, 115200). |
+| **Data Bits** | Number of bits representing the data (typically 8).         |
+| **Parity**    | Optional error-checking bit (None, Even, or Odd).           |
+| **Stop Bits** | Indicates the end of a frame (1 or 2 bits).                 |
+
+---
+
+## 📍 Common Applications
+
+| Application                   | Description                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| Debug Console                 | Printing logs and debugging embedded systems.           |
+| Bootloader Communication      | Firmware download and updates.                          |
+| GPS Modules                   | Receiving location and navigation data.                 |
+| GSM/LTE Modules               | Communication with cellular modems.                     |
+| Bluetooth Modules             | Interfacing with wireless devices (e.g., HC-05, HC-06). |
+| Microcontroller Communication | Data exchange between embedded controllers.             |
+| Sensor Interfaces             | Communication with serial sensors and peripherals.      |
+
+---
+# 🔄 How UART Works
+
+UART communication transfers data **one bit at a time** using two dedicated lines:
+
+* **TX (Transmit)** – Sends data.
+* **RX (Receive)** – Receives data.
+
+Since UART is **asynchronous**, there is **no shared clock signal** between the transmitter and receiver. Instead, both devices must be configured with the **same baud rate**, data format, parity, and stop bits before communication begins.
+
+---
+
+## 📡 UART Transmission Process
+
+| Step  | Stage                     | Description                                                                                                                                                                                                                           |
+| ----- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** | **Idle State**            | The **TX line remains HIGH (logic 1)** when no data is being transmitted. Both transmitter and receiver stay in this idle state until a new frame begins.                                                                             |
+| **2** | **Start Bit**             | The transmitter drives the TX line **LOW (logic 0)** for one bit period. This transition signals the receiver that a new data frame is starting and allows it to synchronize its sampling timing.                                     |
+| **3** | **Data Bits**             | The payload (typically **8 bits**) is transmitted **Least Significant Bit (LSB) first**. Each bit occupies exactly **1 / Baud Rate** seconds. The receiver samples each bit near the middle of the bit period for reliable detection. |
+| **4** | **Parity Bit (Optional)** | An optional parity bit provides basic error detection. **Even parity** ensures the total number of logic 1's is even, while **Odd parity** ensures the total number of logic 1's is odd. Many UART systems disable parity (`None`).   |
+| **5** | **Stop Bit(s)**           | The transmitter returns the TX line to **HIGH (logic 1)** for **1 or 2 bit periods**, indicating the end of the frame and allowing the receiver to prepare for the next transmission.                                                 |
+
+---
+
+## 📦 UART Frame Structure
+
+```text
+Idle ── Start ── D0 ── D1 ── D2 ── D3 ── D4 ── D5 ── D6 ── D7 ── Parity ── Stop
+  1        0       LSB -----------------------------------------------> MSB      1
+```
+
+> **Note:** The parity bit is optional. A common UART configuration is **8N1**, which consists of **8 data bits**, **No parity**, and **1 stop bit**.
+
+---
+
+## ⏱️ UART Timing
+
+| Parameter          | Description                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| **Baud Rate**      | Number of bits transmitted per second (e.g., 9600, 115200 bps).                      |
+| **Bit Time**       | Duration of one bit = **1 / Baud Rate** seconds.                                     |
+| **Sampling Point** | Receiver samples each bit near the center of the bit period for maximum reliability. |
+
+---
+
+## 🔁 UART Communication Flow
+
+```text
++-------------+                         +-------------+
+| Transmitter |                         |  Receiver   |
++-------------+                         +-------------+
+       |                                       |
+       | Idle (TX = 1)                         |
+       |-------------------------------------->|
+       | Start Bit (0)                         |
+       |-------------------------------------->|
+       | Data Bits (LSB First)                 |
+       |-------------------------------------->|
+       | Optional Parity                       |
+       |-------------------------------------->|
+       | Stop Bit(s) (1)                       |
+       |-------------------------------------->|
+```
+
+---
+
+## 💡 UART in This Project
+
+In this project, the **RISC-V processor** communicates with the **UART peripheral** through an **AXI4-Lite interconnect**. Software running on the CPU performs **memory-mapped read and write operations** to the UART registers, while the UART hardware serializes the data into the standard UART frame format for transmission over the **TX** line and reconstructs incoming data received on the **RX** line.
+
+## 💡 UART in This Project
+
+In this project, the **UART peripheral** is integrated with the **RISC-V processor** through an **AXI4-Lite interconnect**. The CPU accesses the UART using **memory-mapped registers**, allowing firmware to transmit and receive serial data by performing standard read and write operations over the AXI bus.
+
+This UART interface is verified using Verilog testbenches and waveform analysis before being integrated into the complete RISC-V SoC subsystem.
+
 
 # 4. Memory-Mapped UART Interface
 
@@ -522,55 +671,485 @@ Serial Output
 
 ---
 
-# 5. RISC-V Processor Integration
+## 📥 UART RX Finite State Machine (FSM)
 
-The processor was connected to the AXI4-Lite interconnect, enabling communication with memory and peripherals.
+### 2-FF Synchronizer — Why It Exists
 
-### Integrated Components
+The external **`rx`** signal arrives **asynchronously**, meaning its transitions are not aligned with the system clock (50 MHz). Sampling this signal directly can cause **metastability**, where a flip-flop temporarily enters an undefined state.
 
-* RISC-V Core
-* AXI4-Lite Interconnect
-* UART Peripheral
-* Memory
-* Reset Logic
-* Clock Network
+To safely transfer the signal into the system clock domain, a **two-stage flip-flop synchronizer** is used:
 
----
+```text
+rx → rx_sync0 → rx_sync1 → rx_s
+```
 
-# 6. AXI4-Lite UART Peripheral
-
-### Features
-
-* AXI Slave Interface
-* UART Control Register
-* Status Register
-* Data Register
-* Interrupt Ready Signals
-
-### Verification
-
-* Read Transactions
-* Write Transactions
-* Register Access
-* UART Communication
+The synchronized signal (`rx_s`) is then used by the UART receiver state machine.
 
 ---
 
-# 7. Embedded Firmware Development
+## UART RX FSM States
 
-Firmware was developed to demonstrate communication between software and hardware.
-
-### Example Tasks
-
-* UART Initialization
-* Character Transmission
-* Register Access
-* Polling Operations
-* Peripheral Testing
-
-This stage demonstrated hardware/software co-design principles in embedded systems.
+| State     | Description                                                                                                                                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **IDLE**  | Monitors `rx_s` for a falling edge (start bit). When `rx_s` transitions from **1 → 0**, the receiver moves to the **START** state.                                                                                        |
+| **START** | Waits **217 clock cycles** (half a bit period) before sampling the start bit. If the sampled value is still `0`, the receiver proceeds to the **DATA** state; otherwise, it returns to **IDLE**.                          |
+| **DATA**  | Samples one data bit every **434 clock cycles** at the middle of each bit period. Each sampled bit is shifted into the receive register using: `shift_reg ← {rx_s, shift_reg[7:1]}`.                                      |
+| **STOP**  | Waits one full bit period (**434 clock cycles**) and checks that the stop bit is `1`. If valid, the received byte is copied to `data_out`, and `data_valid` is asserted for one clock cycle before returning to **IDLE**. |
 
 ---
+
+## Receiver Outputs
+
+| Signal          | Description                                                         |
+| --------------- | ------------------------------------------------------------------- |
+| `data_out[7:0]` | Received 8-bit data byte. Valid only when `data_valid` is asserted. |
+| `data_valid`    | Single-clock-cycle pulse indicating a successful byte reception.    |
+
+---
+
+## UART Sampling Timing
+
+| Parameter          | Value                | Description                                                                                        |
+| ------------------ | -------------------- | -------------------------------------------------------------------------------------------------- |
+| `CLKS_PER_BIT`     | **434**              | Number of system clock cycles for one UART bit period.                                             |
+| `CLKS_HALF_BIT`    | **217**              | Half-bit delay used to sample the center of the start bit.                                         |
+| Start Bit Sampling | **217 cycles**       | Receiver waits half a bit period after detecting the falling edge before confirming the start bit. |
+| Data Bit Sampling  | **Every 434 cycles** | Each data bit is sampled at the center of its bit period for reliable reception.                   |
+
+## ⏱️ Baud Rate & Project Configuration
+
+### Project Configuration
+
+| Parameter                                 | Value                      |
+| ----------------------------------------- | -------------------------- |
+| **System Clock (`CLK_FREQ`)**             | **50 MHz (50,000,000 Hz)** |
+| **UART Baud Rate (`BAUD_RATE`)**          | **115200 bps**             |
+| **Clock Cycles per Bit (`CLKS_PER_BIT`)** | **434**                    |
+| **Half Bit Delay (`CLKS_HALF_BIT`)**      | **217**                    |
+
+---
+
+## Baud Rate Calculation
+
+| Calculation                           | Result                                        |
+| ------------------------------------- | --------------------------------------------- |
+| `CLKS_PER_BIT = CLK_FREQ ÷ BAUD_RATE` | `50,000,000 ÷ 115,200 = 434` clock cycles/bit |
+| `CLKS_HALF_BIT = CLKS_PER_BIT ÷ 2`    | `434 ÷ 2 = 217` clock cycles                  |
+| Bit Period                            | `434 × 20 ns = 8.68 µs`                       |
+| UART Frame (8N1)                      | `10 × 8.68 µs = 86.8 µs`                      |
+
+---
+
+## RTL Configuration
+
+```verilog
+localparam CLK_FREQ      = 50_000_000;
+localparam BAUD_RATE     = 115_200;
+localparam CLKS_PER_BIT  = CLK_FREQ / BAUD_RATE; // 434
+```
+
+### Data Transmission Logic
+
+```verilog
+if (clk_cnt == CLKS_PER_BIT - 1) begin
+    clk_cnt   <= 0;
+    shift_reg <= shift_reg >> 1; // LSB first
+    bit_cnt   <= bit_cnt + 1;
+end
+```
+
+---
+
+## 8N1 UART Configuration
+
+| Setting       | Value    | Description                                                      |
+| ------------- | -------- | ---------------------------------------------------------------- |
+| **Data Bits** | **8**    | Transmits 8 data bits (`bit_cnt` counts from 0 to 7).            |
+| **Parity**    | **None** | No parity bit is transmitted, reducing frame length.             |
+| **Stop Bits** | **1**    | TX remains HIGH for one bit period before the next frame begins. |
+
+---
+
+## Common UART Baud Rates (50 MHz System Clock)
+
+| Baud Rate (bps) |     Clock Divider (`CLKS_PER_BIT`) |
+| --------------: | ---------------------------------: |
+|           9,600 |                               5208 |
+|          19,200 |                               2604 |
+|          38,400 |                               1302 |
+|          57,600 |                                868 |
+|     **115,200** | **434** ✅ *(Used in this project)* |
+|         230,400 |                                217 |
+|         921,600 |                                 54 |
+
+
+# 🔗 RISC-V to AXI4-Lite Integration
+
+## Integration Problem Statement
+
+### 💡 Concept
+
+The **PicoRV32 processor** communicates using its own simple **native memory interface** (`mem_valid` / `mem_ready`), whereas most modern SoC peripherals communicate using the **AXI4-Lite protocol**.
+
+Since these interfaces are fundamentally different, they **cannot be connected directly**. An interface bridge (adapter) is required to translate between the two protocols.
+
+> **Analogy:** Think of the PicoRV32 memory interface and AXI4-Lite as electrical plugs from different countries. Both serve the same purpose, but they use different connectors. A **plug adapter** is needed so they can work together.
+
+---
+
+## PicoRV32 Native Memory Interface
+
+| Feature              | Description                                              |
+| -------------------- | -------------------------------------------------------- |
+| Request Signal       | `mem_valid` indicates a memory transaction request.      |
+| Response Signal      | `mem_ready` acknowledges completion of the transaction.  |
+| Transaction Model    | Supports only **one outstanding transaction** at a time. |
+| Interface Complexity | Simple single-channel memory interface.                  |
+| Communication        | No separate address, data, or response channels.         |
+
+---
+
+## Why Direct Connection is Not Possible
+
+| PicoRV32 Native Bus                 | AXI4-Lite                                             |
+| ----------------------------------- | ----------------------------------------------------- |
+| Single memory interface             | Five independent communication channels               |
+| `mem_valid` / `mem_ready` handshake | Separate `VALID` / `READY` handshake for each channel |
+| One transaction at a time           | Independent read and write operations                 |
+| Simple control interface            | Industry-standard interconnect protocol               |
+| Direct peripheral access            | Standard interface for SoC IP blocks                  |
+
+---
+
+## Solution: AXI Adapter
+
+To integrate the processor with AXI4-Lite peripherals, an adapter converts the PicoRV32 native memory interface into an AXI4-Lite master interface.
+
+Two common approaches are:
+
+| Method                         | Description                                                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| **`picorv32_axi`**             | PicoRV32 version with a built-in AXI4-Lite master interface.                                                                      |
+| **`picorv32` + `axi_adapter`** | Uses the standard PicoRV32 core together with an external bridge that converts the native memory bus into AXI4-Lite transactions. |
+
+---
+
+## Protocol Conversion
+
+```text id="zjuhxv"
+      PicoRV32                     AXI Adapter                  AXI4-Lite Bus
++----------------+          +--------------------+        +----------------------+
+| Native Memory  |          | Protocol Converter |        | AXI Master Interface |
+| mem_valid      |  ----->  |                    | -----> | AW, W, B, AR, R      |
+| mem_ready      | <-----   |                    | <----- | VALID / READY        |
++----------------+          +--------------------+        +----------------------+
+```
+
+The adapter translates the **single-channel PicoRV32 memory bus** into the **five independent AXI4-Lite channels**, allowing the processor to communicate with standard AXI peripherals such as UART, GPIO, timers, and memory controllers.
+
+---
+
+## Benefits of the AXI Adapter
+
+| Benefit                  | Description                                                                   |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| Protocol Translation     | Converts the PicoRV32 native memory interface into AXI4-Lite transactions.    |
+| Peripheral Compatibility | Enables communication with industry-standard AXI IP cores.                    |
+| Modular Design           | Keeps the CPU independent of peripheral implementations.                      |
+| Scalability              | Additional AXI peripherals can be integrated without modifying the processor. |
+| SoC Integration          | Provides a clean AXI master interface for the complete SoC subsystem.         |
+
+---
+
+## Prerequisites
+
+Before understanding the integration process, the following concepts are assumed:
+
+| Topic          | Knowledge Required                                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **RISC-V ISA** | Understanding of `LW`, `SW`, load/store instructions, and memory access.                                             |
+| **AXI4-Lite**  | Knowledge of the five communication channels (`AW`, `W`, `B`, `AR`, `R`) and the `VALID`/`READY` handshake protocol. |
+
+
+## 🧠 PicoRV32 Native Memory Interface
+
+The **PicoRV32** processor communicates with memory and peripherals through a simple **native memory interface** based on a request/acknowledge handshake. Unlike AXI4-Lite, this interface supports **only one memory transaction at a time**, making it lightweight and easy to integrate.
+
+---
+
+## Handshake Rules
+
+| Rule  | Description                                                                                                                             |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** | `mem_valid` **must remain HIGH** until `mem_ready` is asserted.                                                                         |
+| **2** | `mem_wstrb ≠ 0` indicates a **write transaction**; `mem_wstrb = 0` indicates a **read transaction**.                                    |
+| **3** | Only **one outstanding memory transaction** is allowed at any time.                                                                     |
+| **4** | `CATCH_MISALIGN = 1` and `CATCH_ILLINSN = 1` are enabled, allowing the CPU to trap misaligned memory accesses and illegal instructions. |
+
+---
+
+## Native Memory Interface Signals
+
+| Signal      | Direction |  Width  | Description                                                                    |
+| ----------- | :-------: | :-----: | ------------------------------------------------------------------------------ |
+| `mem_valid` |   Output  |    1    | Indicates that the CPU has initiated a memory request.                         |
+| `mem_ready` |   Input   |    1    | Asserted by the memory or peripheral to acknowledge completion of the request. |
+| `mem_addr`  |   Output  | 32 bits | Byte address for the memory access.                                            |
+| `mem_wdata` |   Output  | 32 bits | Data to be written during a write transaction.                                 |
+| `mem_wstrb` |   Output  |  4 bits | Byte-enable signals. A non-zero value indicates a write; `0` indicates a read. |
+| `mem_rdata` |   Input   | 32 bits | Data returned to the CPU during a read transaction.                            |
+| `mem_instr` |   Output  |    1    | Indicates the type of access: `1` = Instruction Fetch, `0` = Data Access.      |
+
+# 🏗️ SoC Architecture Overview
+
+The SoC integrates the **PicoRV32 processor** with an **AXI4-Lite interconnect**, allowing the CPU to communicate with memory and peripherals through a unified, industry-standard bus architecture.
+
+---
+
+## System Architecture
+
+```text id="y7o7l4"
+                     +----------------------+
+                     |     PicoRV32 CPU     |
+                     +----------+-----------+
+                                |
+                     Native Memory Interface
+                  (mem_valid / mem_ready / addr)
+                                |
+                                ▼
+                  +---------------------------+
+                  |     CPU-to-AXI Bridge     |
+                  |       (rtl/top.v)         |
+                  +------------+--------------+
+                               |
+                     AXI4-Lite Master Interface
+                 (AW, W, B, AR, R Channels)
+                               |
+                               ▼
+                  +---------------------------+
+                  |  AXI-Lite Interconnect    |
+                  |    + Address Decoder      |
+                  +-----+-----------+---------+
+                        |           |
+          +-------------+-----------+-------------+
+          |                           |           |
+          ▼                           ▼           ▼
+   +-------------+             +-------------+  +-------------+
+   |  ROM (S0)   |             | SRAM (S1)   |  | UART (S2)   |
+   +-------------+             +-------------+  +-------------+
+   0x0000_0000                0x0001_0000     0x1000_0000
+   – 0x0000_FFFF              – 0x0001_FFFF   – 0x1000_00FF
+```
+
+---
+
+## SoC Components
+
+| Component                 | File                          | Address Range               | Description                                                                |
+| ------------------------- | ----------------------------- | --------------------------- | -------------------------------------------------------------------------- |
+| **PicoRV32 CPU**          | `rtl/picorv32.v`              | —                           | Executes the RISC-V RV32I instruction set and generates memory requests.   |
+| **CPU-to-AXI Bridge**     | `rtl/top.v`                   | —                           | Converts the PicoRV32 native memory interface into AXI4-Lite transactions. |
+| **AXI-Lite Interconnect** | `rtl/axi_lite_interconnect.v` | —                           | Routes AXI transactions from the CPU to the appropriate slave peripheral.  |
+| **Address Decoder**       | `rtl/axi_decoder.v`           | —                           | Decodes the AXI address and selects the target slave device.               |
+| **ROM (S0)**              | `rtl/rom.v`                   | `0x0000_0000 – 0x0000_FFFF` | Stores the boot program and executable instructions.                       |
+| **SRAM (S1)**             | `rtl/sram.v`                  | `0x0001_0000 – 0x0001_FFFF` | Read/write data memory used during program execution.                      |
+| **UART (S2)**             | `rtl/uart_axi.v`              | `0x1000_0000 – 0x1000_00FF` | Memory-mapped UART peripheral for serial communication.                    |
+
+---
+
+## Memory Map
+
+|  Slave | Peripheral | Base Address  | End Address   |
+| :----: | ---------- | ------------- | ------------- |
+| **S0** | ROM        | `0x0000_0000` | `0x0000_FFFF` |
+| **S1** | SRAM       | `0x0001_0000` | `0x0001_FFFF` |
+| **S2** | UART       | `0x1000_0000` | `0x1000_00FF` |
+
+
+## 🔄 CPU-to-AXI Bridge FSM
+
+```text
+                    +----------------+
+                    |    ST_IDLE     |
+                    |    (3'd0)      |
+                    +----------------+
+                           |
+                 cpu_mem_valid = 1
+                           |
+          +----------------+----------------+
+          |                                 |
+   mem_wstrb ≠ 0                     mem_wstrb = 0
+      (Write)                           (Read)
+          |                                 |
+          ▼                                 ▼
++----------------+                 +----------------+
+|    ST_WR_AW    |                 |    ST_RD_AR    |
+|     (3'd1)     |                 |     (3'd3)     |
+| AWVALID = 1    |                 | ARVALID = 1    |
+| WVALID = 1     |                 | Wait ARREADY   |
++----------------+                 +----------------+
+          |                                 |
+ AWREADY & WREADY                    ARREADY = 1
+          |                                 |
+          ▼                                 ▼
++----------------+                 +----------------+
+|    ST_WR_B     |                 |    ST_RD_R     |
+|     (3'd2)     |                 |     (3'd4)     |
+| Wait BVALID    |                 | Wait RVALID    |
+| cpu_mem_ready  |                 | Capture RDATA  |
++----------------+                 | cpu_mem_ready  |
+          |                        +----------------+
+          |                                 |
+          +---------------+-----------------+
+                          |
+                          ▼
+                    +----------------+
+                    |    ST_IDLE     |
+                    +----------------+
+```
+
+## 📝 AXI Write Transaction (UART TX Example)
+
+**Example:** CPU writes the character **'H' (0x48)** to the UART TX register at **`0x10000000`**
+
+```text
+┌──────────────────────────────┐
+│ ① AW Channel (Address Phase) │
+├──────────────────────────────┤
+│ AWADDR  = 0x10000000         │
+│ AWVALID = 1                  │
+│ AWREADY = 1                  │
+│                              │
+│ ✓ Address Handshake Complete │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ ② W Channel (Data Phase)     │
+├──────────────────────────────┤
+│ WDATA   = 0x48 ('H')         │
+│ WSTRB   = 4'h1               │
+│ WVALID  = 1                  │
+│ WREADY  = 1                  │
+│                              │
+│ ✓ Data Handshake Complete    │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ ③ B Channel (Response Phase) │
+├──────────────────────────────┤
+│ BVALID = 1                   │
+│ BREADY = 1                   │
+│ BRESP  = 2'b00 (OKAY)        │
+│                              │
+│ ✓ Write Successful           │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ ④ CPU Transaction Complete   │
+├──────────────────────────────┤
+│ ready_r        = 1           │
+│ cpu_mem_ready  = 1 (Pulse)   │
+│ Bridge → ST_IDLE             │
+│                              │
+│ ✓ CPU Continues Execution    │
+└──────────────────────────────┘
+```
+
+> **Note:** `WSTRB = 4'h1` because the firmware uses the **SB (Store Byte)** instruction to write a single byte to the UART transmit register. The **AW (Address)** and **W (Data)** channels may complete simultaneously, improving write performance.
+
+
+## 📖 AXI Read Transaction (UART STATUS Example)
+
+**Example:** CPU reads the **UART STATUS Register** at **`0x10000008`**
+
+```text
+┌──────────────────────────────┐
+│ ① AR Channel (Address Phase) │
+├──────────────────────────────┤
+│ ARADDR  = 0x10000008         │
+│ ARVALID = 1                  │
+│ ARREADY = 1                  │
+│                              │
+│ ✓ Address Handshake Complete │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ ② Bridge State               │
+├──────────────────────────────┤
+│ ST_IDLE → ST_RD_AR           │
+│                              │
+│ RREADY = 1                   │
+│                              │
+│ ✓ Waiting for Read Data      │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ ③ R Channel (Read Data)      │
+├──────────────────────────────┤
+│ RVALID = 1                   │
+│ RREADY = 1                   │
+│                              │
+│ RDATA → rdata_r              │
+│                              │
+│ ✓ Data Received              │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ ④ CPU Transaction Complete   │
+├──────────────────────────────┤
+│ ready_r        = 1 (Pulse)   │
+│ cpu_mem_ready  = 1           │
+│ Bridge → ST_IDLE             │
+│                              │
+│ ✓ CPU Resumes Execution      │
+└──────────────────────────────┘
+```
+
+### UART Memory Map
+
+| Register        | Address      |
+| --------------- | ------------ |
+| **UART TX**     | `0x10000000` |
+| **UART RX**     | `0x10000004` |
+| **UART STATUS** | `0x10000008` |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 8. Complete SoC Integration
 
